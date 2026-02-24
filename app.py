@@ -26,26 +26,48 @@ def generate_questions():
     try:
         response = client.llm.chat(
             model=og.TEE_LLM.GPT_4O,
-            messages=[{"role": "user", "content": f"""Generate 10 multiple choice questions about OpenGradient. 
-Use a random seed: {os.urandom(4).hex()}
+            messages=[{"role": "user", "content": f"""You are a quiz generator for OpenGradient. Generate 10 multiple choice questions.
 
-IMPORTANT RULES:
-- Make every quiz completely different from previous ones
-- Randomly vary which option (A, B, C or D) is the correct answer — do NOT always make the correct answer option A
-- Mix easy and medium difficulty questions
-- Shuffle the correct answer position randomly across all questions
+Random seed: {os.urandom(8).hex()}
+Random topic offset: {int.from_bytes(os.urandom(2), 'big') % 100}
 
-Topics to randomly pick from: what OpenGradient is, verifiable AI, TEE execution, decentralized inference, OG token, Model Hub, MemSync, Digital Twins, zkML, on-chain AI, Base Sepolia, OpenGradient SDK, BitQuant, x402 protocol, OpenGradient network architecture.
+STRICT RULES:
+- Every quiz MUST be completely different. Never repeat the same questions.
+- Randomly pick from these specific topics and rotate them differently each time:
+  * OpenGradient's mission and vision
+  * How TEE (Trusted Execution Environment) works in OpenGradient
+  * zkML proofs and how they work
+  * The OG token utility and economics
+  * Model Hub features and how to use it
+  * MemSync and AI memory
+  * Digital Twins on twin.fun
+  * BitQuant and AI trading
+  * x402 protocol and trustless inference
+  * Base Sepolia testnet integration
+  * OpenGradient SDK features
+  * Verifiable AI inference explained
+  * OpenGradient network architecture
+  * Decentralized AI compute
+  * On-chain AI agents
+  * OpenGradient backers (a16z, Coinbase etc)
+  * Real world use cases of OpenGradient
+  * How to run inference on OpenGradient
+  * OpenGradient vs centralized AI
+  * EVM compatibility in OpenGradient
 
-Return ONLY a JSON array, no other text, like this:
+- Make the correct answer position RANDOM — spread answers across index 0, 1, 2, 3 evenly
+- Questions should be interesting and educational, not too hard
+- Make wrong options plausible but clearly wrong to someone who knows OpenGradient
+
+Return ONLY a JSON array like this:
 [
   {{
-    "question": "What is OpenGradient?",
-    "options": ["A crypto exchange", "A decentralized AI network", "A wallet", "A game"],
-    "answer": 1
+    "question": "question here",
+    "options": ["option A", "option B", "option C", "option D"],
+    "answer": 2
   }}
 ]
-answer is the index (0,1,2,3) of the correct option. Vary the answer index across questions."""}],
+answer is the index (0-3) of the correct option."""}],
             max_tokens=2500
         )
 
