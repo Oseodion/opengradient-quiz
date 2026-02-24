@@ -9,7 +9,6 @@ body {
     background: linear-gradient(160deg, #050d1a 0%, #0a1a2e 40%, #0d2233 100%);
     color: white;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
     display: flex;
     align-items: center;
     justify-content: center;
