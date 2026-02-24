@@ -1,5 +1,5 @@
 import os
-
+import time
 import json
 import opengradient as og
 from flask import Flask, jsonify, send_from_directory
@@ -29,7 +29,9 @@ def generate_questions():
             messages=[{"role": "user", "content": f"""You are a quiz generator for OpenGradient. Generate 10 multiple choice questions.
 
 Random seed: {os.urandom(8).hex()}
+Timestamp: {int(time.time())}
 Random topic offset: {int.from_bytes(os.urandom(2), 'big') % 100}
+Pick a completely different set of topics this time. Do not use the same questions as before.
 
 STRICT RULES:
 - Every quiz MUST be completely different. Never repeat the same questions.
