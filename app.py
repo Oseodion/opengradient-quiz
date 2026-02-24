@@ -24,52 +24,66 @@ def logo():
 @app.route('/generate-questions', methods=['POST'])
 def generate_questions():
     try:
-        response = client.llm.chat(
-            model=og.TEE_LLM.GPT_4O,
-            messages=[{"role": "user", "content": f"""You are a quiz generator for OpenGradient. Generate 10 multiple choice questions.
+        import random
+        import time
 
-Random seed: {os.urandom(8).hex()}
-Timestamp: {int(time.time())}
-Random topic offset: {int.from_bytes(os.urandom(2), 'big') % 100}
-Pick a completely different set of topics this time. Do not use the same questions as before.
+        all_topics = [
+            "How TEE (Trusted Execution Environment) ensures secure AI inference",
+            "What zkML proofs are and how OpenGradient uses them",
+            "The OG token — what it's used for and how to earn it",
+            "OpenGradient Model Hub — how to host and explore AI models",
+            "MemSync — how it handles AI memory across apps",
+            "Digital Twins on twin.fun — what they are and how they work",
+            "BitQuant — AI-powered quantitative trading analysis",
+            "x402 protocol — trustless and verifiable AI inference",
+            "Base Sepolia testnet — why OpenGradient uses it",
+            "OpenGradient SDK — how developers build on-chain AI apps",
+            "Verifiable AI — why it matters and how OpenGradient achieves it",
+            "OpenGradient network architecture — nodes, compute, and consensus",
+            "Decentralized AI compute — how OpenGradient distributes workloads",
+            "On-chain AI agents — what they are and real use cases",
+            "OpenGradient backers — a16z, Coinbase, and other investors",
+            "Real world use cases of verifiable AI in Web3",
+            "How to run inference on OpenGradient network",
+            "OpenGradient vs centralized AI providers like OpenAI",
+            "EVM compatibility — how OpenGradient works with Ethereum",
+            "OpenGradient's mission — open and verifiable AI for everyone",
+            "How privacy is preserved during AI inference in OpenGradient",
+            "What makes OpenGradient different from other AI blockchains",
+            "How developers deploy AI models on OpenGradient",
+            "OpenGradient's approach to AI transparency and auditability",
+        ]
 
-STRICT RULES:
-- Every quiz MUST be completely different. Never repeat the same questions.
-- Randomly pick from these specific topics and rotate them differently each time:
-  * OpenGradient's mission and vision
-  * How TEE (Trusted Execution Environment) works in OpenGradient
-  * zkML proofs and how they work
-  * The OG token utility and economics
-  * Model Hub features and how to use it
-  * MemSync and AI memory
-  * Digital Twins on twin.fun
-  * BitQuant and AI trading
-  * x402 protocol and trustless inference
-  * Base Sepolia testnet integration
-  * OpenGradient SDK features
-  * Verifiable AI inference explained
-  * OpenGradient network architecture
-  * Decentralized AI compute
-  * On-chain AI agents
-  * OpenGradient backers (a16z, Coinbase etc)
-  * Real world use cases of OpenGradient
-  * How to run inference on OpenGradient
-  * OpenGradient vs centralized AI
-  * EVM compatibility in OpenGradient
+        selected_topics = random.sample(all_topics, 10)
+        seed = os.urandom(8).hex()
+        timestamp = int(time.time())
 
-- Make the correct answer position RANDOM — spread answers across index 0, 1, 2, 3 evenly
-- Questions should be interesting and educational, not too hard
-- Make wrong options plausible but clearly wrong to someone who knows OpenGradient
+        prompt = f"""You are a quiz generator. Generate exactly 10 multiple choice questions about OpenGradient.
 
-Return ONLY a JSON array like this:
+Timestamp: {timestamp}
+Seed: {seed}
+
+You MUST generate one question per topic below. Use EXACTLY these 10 topics in this order:
+{chr(10).join(f"{i+1}. {t}" for i, t in enumerate(selected_topics))}
+
+RULES:
+- Each question must be specifically about that topic
+- Make 4 answer options per question
+- Spread correct answer positions: use index 0, 1, 2, 3 randomly — NOT always 0
+- Keep questions educational and not too hard
+
+Return ONLY a JSON array, no markdown, no explanation:
 [
   {{
-    "question": "question here",
+    "question": "question text",
     "options": ["option A", "option B", "option C", "option D"],
     "answer": 2
   }}
-]
-answer is the index (0-3) of the correct option."""}],
+]"""
+
+        response = client.llm.chat(
+            model=og.TEE_LLM.GPT_4O,
+            messages=[{"role": "user", "content": prompt}],
             max_tokens=2500
         )
 
@@ -87,5 +101,3 @@ answer is the index (0-3) of the correct option."""}],
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
-if __name__ == '__main__':
-    app.run(debug=True, port=8080, host='0.0.0.0')
