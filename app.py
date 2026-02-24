@@ -1,13 +1,21 @@
 import os
-import time
 import json
-import opengradient as og
+import random
+import time
 from flask import Flask, jsonify, send_from_directory
 
-client = og.init(private_key=os.getenv("PRIVATE_KEY", ""))
-client.llm.ensure_opg_approval(opg_amount=5)
-
 app = Flask(__name__)
+
+client = None
+
+def get_client():
+    global client
+    if client is None:
+        import opengradient as og
+        os.environ["BASE_SEPOLIA_RPC_URL"] = os.getenv("BASE_SEPOLIA_RPC_URL", "")
+        client = og.init(private_key=os.getenv("PRIVATE_KEY", ""))
+        client.llm.ensure_opg_approval(opg_amount=5)
+    return client
 
 @app.route('/')
 def index():
@@ -24,8 +32,8 @@ def logo():
 @app.route('/generate-questions', methods=['POST'])
 def generate_questions():
     try:
-        import random
-        import time
+        import opengradient as og
+        c = get_client()
 
         all_topics = [
             "How TEE (Trusted Execution Environment) ensures secure AI inference",
@@ -81,7 +89,7 @@ Return ONLY a JSON array, no markdown, no explanation:
   }}
 ]"""
 
-        response = client.llm.chat(
+        response = c.llm.chat(
             model=og.TEE_LLM.GPT_4O,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=2500
@@ -101,3 +109,6 @@ Return ONLY a JSON array, no markdown, no explanation:
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8080, host='0.0.0.0')
