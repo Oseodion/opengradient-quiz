@@ -309,7 +309,7 @@
     }
 
     function shareToX() {
-    const tweetText = `I took the OpenGradient Knowledge Quiz and scored ${score}/10! \n\nMy level: ${document.getElementById('result-title').textContent}\n\nAre you an OG Newbie, Builder, or Master? Find out! 👇\n\n#OpenGradient #VerifiableAI`;
+    const tweetText = `I took the OpenGradient Knowledge Quiz and scored ${score}/10! \nhttps://opengradient-quiz.up.railway.app/\nMy level: ${document.getElementById('result-title').textContent}\n\nAre you an OG Newbie, Builder, or Master? Find out! 👇\n\n#OpenGradient #VerifiableAI`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(url, '_blank');
 }
