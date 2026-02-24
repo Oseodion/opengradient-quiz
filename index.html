@@ -115,16 +115,35 @@
 
 <script>
     // Particles
-    const particlesContainer = document.getElementById('particles');
-    for (let i = 0; i < 80; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.animationDuration = (Math.random() * 15 + 10) + 's';
-        p.style.animationDelay = '-' + (Math.random() * 15) + 's';
-        p.style.width = p.style.height = (Math.random() * 4 + 1) + 'px';
-        particlesContainer.appendChild(p);
-    }
+    // const particlesContainer = document.getElementById('particles');
+    // for (let i = 0; i < 80; i++) {
+    //     const p = document.createElement('div');
+    //     p.className = 'particle';
+    //     p.style.left = Math.random() * 100 + '%';
+    //     p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+    //     p.style.animationDelay = '-' + (Math.random() * 15) + 's';
+    //     p.style.width = p.style.height = (Math.random() * 4 + 1) + 'px';
+    //     particlesContainer.appendChild(p);
+    // }// Particles
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    p.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: #00d4c8;
+        border-radius: 50%;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        opacity: ${Math.random() * 0.5 + 0.3};
+        animation: float ${Math.random() * 15 + 10}s linear infinite;
+        animation-delay: -${Math.random() * 15}s;
+    `;
+    particlesContainer.appendChild(p);
+}
 
     let userName = '';
     let pfpDataUrl = '';
