@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenGradient Quiz</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="container">
+
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen-welcome">
+        <div class="card">
+            <div class="logo">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+                    <img src="logo.png" style="height: 40px;" />
+                    <span style="font-size: 22px; font-weight: 700; color: #00d4c8; letter-spacing: 1px;">OpenGradient</span>
+                </div>
+            </div>
+            <h1>How well do you know OpenGradient?</h1>
+            <p class="subtitle">Answer 10 questions and find out your OG knowledge level</p>
+            <input type="text" id="username" placeholder="Enter your name" />
+            <div class="pfp-upload" id="pfp-upload-area">
+                <img class="pfp-preview" id="pfp-preview" />
+                <div id="pfp-placeholder">
+                    <div style="font-size: 30px; margin-bottom: 8px;">📷</div>
+                    <div style="color: rgba(255,255,255,0.5); font-size: 14px;">Upload pfp</div>
+                </div>
+            </div>
+            <input type="file" id="pfp-input" accept="image/*" style="display:none" />
+            <button class="btn" onclick="startQuiz()">Start Quiz →</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Loading -->
+    <div class="screen" id="screen-loading">
+        <div class="card">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div style="color: #00d4c8; font-weight: 700; margin-bottom: 15px; letter-spacing: 1px;">OPENGRADIENT</div>
+                <div class="loading-text">Generating your questions via OpenGradient network...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 3: Quiz -->
+    <div class="screen" id="screen-quiz">
+        <div class="card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="logo.png" style="height: 25px;" />
+                    <span style="font-size: 16px; font-weight: 700; color: #00d4c8;">OpenGradient</span>
+                </div>
+                <div class="timer" id="timer">30</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="question-number" id="question-number">QUESTION 1 OF 10</div>
+            <div class="question-text" id="question-text"></div>
+            <div class="options" id="options"></div>
+        </div>
+    </div>
+
+    <!-- Screen 4: Review -->
+    <div class="screen" id="screen-review">
+        <div class="card">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px;">
+                <img src="logo.png" style="height: 25px;" />
+                <span style="font-size: 16px; font-weight: 700; color: #00d4c8;">OpenGradient</span>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 5px; font-size: 22px;">Quiz Review</h2>
+            <p style="text-align: center; color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 25px;">See how you did on each question</p>
+            <div id="review-list"></div>
+            <button class="btn" style="margin-top: 20px;" onclick="showFinalResult()">See My Result →</button>
+        </div>
+    </div>
+
+    <!-- Screen 5: Grading -->
+    <div class="screen" id="screen-grading">
+        <div class="card">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div style="color: #00d4c8; font-weight: 700; margin-bottom: 15px; letter-spacing: 1px;">OPENGRADIENT</div>
+                <div class="loading-text">Calculating your OG knowledge level...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 6: Results -->
+    <div class="screen" id="screen-result">
+        <div class="card result-card">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <img src="logo.png" style="height: 30px;" />
+                <span style="font-size: 18px; font-weight: 700; color: #00d4c8;">OpenGradient</span>
+            </div>
+            <img class="result-pfp" id="result-pfp" src="" />
+            <div class="result-name" id="result-name"></div>
+            <div class="result-score" id="result-score"></div>
+            <div class="result-score-label">CORRECT ANSWERS</div>
+            <div class="result-title" id="result-title"></div>
+            <p id="result-message" style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 25px; line-height: 1.6;"></p>
+            <button class="btn" id="share-btn" onclick="shareToX()" style="margin-bottom: 12px;">Share on X 🐦</button>
+            <button class="btn" onclick="location.reload()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">Try Again →</button>
+            <div class="og-footer">Powered by <span>OpenGradient</span> Verifiable AI</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 80; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+        p.style.animationDelay = '-' + (Math.random() * 15) + 's';
+        p.style.width = p.style.height = (Math.random() * 4 + 1) + 'px';
+        particlesContainer.appendChild(p);
+    }
+
+    let userName = '';
+    let pfpDataUrl = '';
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let userAnswers = [];
+    let timerInterval = null;
+    let timeLeft = 30;
+
+    // PFP Upload
+    document.getElementById('pfp-upload-area').addEventListener('click', function() {
+        document.getElementById('pfp-input').click();
+    });
+
+    document.getElementById('pfp-input').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            pfpDataUrl = e.target.result;
+            const preview = document.getElementById('pfp-preview');
+            preview.src = pfpDataUrl;
+            preview.style.display = 'block';
+            document.getElementById('pfp-placeholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    async function startQuiz() {
+        userName = document.getElementById('username').value.trim();
+        if (!userName) { alert('Please enter your name!'); return; }
+        showScreen('screen-loading');
+        try {
+            const response = await fetch('/generate-questions', { method: 'POST' });
+            const data = await response.json();
+            questions = data.questions;
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            showQuestion();
+        } catch (err) {
+            alert('Error generating questions. Please try again.');
+            showScreen('screen-welcome');
+        }
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 15;
+        const timerEl = document.getElementById('timer');
+        timerEl.textContent = timeLeft;
+        timerEl.style.color = '#00d4c8';
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 10) timerEl.style.color = '#ff3d71';
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                // Time's up - mark as wrong
+                userAnswers.push({ selected: -1, correct: questions[currentQuestion].answer, timedOut: true });
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showReview();
+                }
+            }
+        }, 1000);
+    }
+
+    function showQuestion() {
+        showScreen('screen-quiz');
+        const q = questions[currentQuestion];
+        const progress = (currentQuestion / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = progress + '%';
+        document.getElementById('question-number').textContent = `QUESTION ${currentQuestion + 1} OF ${questions.length}`;
+        document.getElementById('question-text').textContent = q.question;
+
+        const optionsEl = document.getElementById('options');
+        optionsEl.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.textContent = opt;
+            div.onclick = () => selectAnswer(i, q.answer, div);
+            optionsEl.appendChild(div);
+        });
+
+        startTimer();
+    }
+
+    function selectAnswer(selected, correct, el) {
+        clearInterval(timerInterval);
+        document.querySelectorAll('.option').forEach(o => o.onclick = null);
+
+        if (selected === correct) {
+            el.classList.add('correct');
+            score++;
+        } else {
+            el.classList.add('wrong');
+            document.querySelectorAll('.option')[correct].classList.add('correct');
+        }
+
+        userAnswers.push({ selected, correct, timedOut: false });
+
+        setTimeout(() => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showReview();
+            }
+        }, 1200);
+    }
+
+    function showReview() {
+        showScreen('screen-review');
+        const reviewList = document.getElementById('review-list');
+        reviewList.innerHTML = '';
+
+        questions.forEach((q, i) => {
+            const ua = userAnswers[i];
+            const isCorrect = ua.selected === ua.correct;
+            const timedOut = ua.timedOut;
+
+            const item = document.createElement('div');
+            item.style.cssText = `
+                margin-bottom: 20px;
+                padding: 16px;
+                border-radius: 12px;
+                background: ${isCorrect ? 'rgba(0,200,83,0.08)' : 'rgba(255,61,113,0.08)'};
+                border: 1px solid ${isCorrect ? 'rgba(0,200,83,0.3)' : 'rgba(255,61,113,0.3)'};
+            `;
+
+            item.innerHTML = `
+                <div style="font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 6px;">QUESTION ${i + 1}</div>
+                <div style="font-size: 15px; font-weight: 600; margin-bottom: 10px;">${q.question}</div>
+                <div style="font-size: 13px; color: ${isCorrect ? '#00c853' : '#ff3d71'}; margin-bottom: 4px;">
+                    ${timedOut ? '⏱️ Time ran out!' : isCorrect ? '✅ Correct!' : `❌ You answered: ${q.options[ua.selected]}`}
+                </div>
+                ${!isCorrect ? `<div style="font-size: 13px; color: #00c853;">✅ Correct answer: ${q.options[ua.correct]}</div>` : ''}
+            `;
+
+            reviewList.appendChild(item);
+        });
+    }
+
+    function showFinalResult() {
+        showScreen('screen-grading');
+        let title, titleClass, message;
+
+        if (score <= 3) {
+            title = '🌱 OG Newbie'; titleClass = 'newbie';
+            message = 'Just getting started! Explore the OpenGradient docs and come back stronger.';
+        } else if (score <= 6) {
+            title = '⚒️ OG Builder'; titleClass = 'builder';
+            message = 'Solid knowledge! You understand the basics and are on your way to mastering OpenGradient.';
+        } else if (score <= 8) {
+            title = '🔥 OG Expert'; titleClass = 'master';
+            message = 'Great job! You have strong knowledge of OpenGradient and its ecosystem.';
+        } else {
+            title = '👑 OG Master'; titleClass = 'master';
+            message = 'Legendary! You have deep knowledge of OpenGradient. You are a true OG!';
+        }
+
+        setTimeout(() => {
+            showScreen('screen-result');
+            if (pfpDataUrl) document.getElementById('result-pfp').src = pfpDataUrl;
+            document.getElementById('result-name').textContent = userName;
+            document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+            const titleEl = document.getElementById('result-title');
+            titleEl.textContent = title;
+            titleEl.className = `result-title ${titleClass}`;
+            document.getElementById('result-message').textContent = message;
+        }, 2000);
+    }
+
+    function shareToX() {
+    const tweetText = `I took the OpenGradient Knowledge Quiz and scored ${score}/10! \n\nMy level: ${document.getElementById('result-title').textContent}\n\nAre you an OG Newbie, Builder, or Master? Find out! 👇\n\n#OpenGradient #VerifiableAI`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    window.open(url, '_blank');
+}
+</script>
+
+</body>
+</html>
