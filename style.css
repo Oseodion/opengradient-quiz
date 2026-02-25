@@ -317,6 +317,12 @@ input[type="text"]:focus {
     border-color: #00d4c8;
     background: rgba(0, 212, 200, 0.08);
 }
+@media (hover: none) {
+    .option:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
 .option:focus {
     outline: none;
     border-color: rgba(255, 255, 255, 0.1);
